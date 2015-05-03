@@ -15,6 +15,6 @@ namespace :alchemy do
 end
 
 namespace :deploy do
-  before :starting, 'alchemy:db:seed'
+  after :migrate, 'alchemy:db:seed'
 end
 
