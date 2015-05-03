@@ -15,6 +15,3 @@ namespace :alchemy do
   before 'db:dump', 'deploy:check'
 end
 
-namespace :deploy do
-  before :starting, 'alchemy:db:seed'
-end
