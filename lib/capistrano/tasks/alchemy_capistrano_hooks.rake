@@ -11,7 +11,6 @@ namespace :alchemy do
   before 'import:pictures', 'deploy:check'
   before 'import:attachments', 'deploy:check'
   before 'upgrade', 'deploy:check'
-  before 'db:seed', 'deploy:check'
   before 'db:dump', 'deploy:check'
 end
 
