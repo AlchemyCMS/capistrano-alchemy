@@ -5,6 +5,6 @@ namespace :load do
 end
 
 namespace :deploy do
-  after :migrate, 'db:seed'
+  after :migrate, 'alchemy:db:seed'
 end
 
