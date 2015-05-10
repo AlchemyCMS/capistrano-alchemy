@@ -22,7 +22,7 @@ namespace :alchemy do
   # TODO: Do we really need this in Alchemy or should we release an official Capistrano plugin for that?
   namespace :database_yml do
     desc "Creates the database.yml file"
-    task :create do
+    task create: 'deploy:check' do
       set :db_environment, ask("the environment", fetch(:rails_env, 'production'))
       set :db_adapter, ask("database adapter (mysql or postgresql)", 'mysql')
       set :db_adapter, fetch(:db_adapter).gsub(/\Amysql\z/, 'mysql2')
@@ -51,7 +51,7 @@ EOF
 
   namespace :db do
     desc "Seeds the database with essential data."
-    task :seed do
+    task seed: 'deploy:check' do
       on roles :db do
         within release_path do
           with rails_env: fetch(:rails_env, 'production') do
@@ -62,7 +62,7 @@ EOF
     end
 
     desc "Dumps the database into 'db/dumps' on the server."
-    task :dump do
+    task dump: 'deploy:check' do
       on roles :db do
         within release_path do
           timestamp = Time.now.strftime('%Y-%m-%d-%H-%M')
@@ -77,7 +77,7 @@ EOF
 
   namespace :import do
     desc "Imports all data (Pictures, attachments and the database) into your local development machine."
-    task :all do
+    task all: 'deploy:check' do
       on roles [:app, :db] do
         invoke('alchemy:import:pictures')
         puts "\n"
@@ -88,7 +88,7 @@ EOF
     end
 
     desc "Imports the server database into your local development machine."
-    task :database do
+    task database: 'deploy:check' do
       on roles :db do |server|
         puts "Importing database. Please wait..."
         system db_import_cmd(server)
@@ -97,14 +97,14 @@ EOF
     end
 
     desc "Imports attachments into your local machine using rsync."
-    task :attachments do
+    task attachments: 'deploy:check' do
       on roles :app do |server|
         get_files(:attachments, server)
       end
     end
 
     desc "Imports pictures into your local machine using rsync."
-    task :pictures do
+    task pictures: 'deploy:check' do
       on roles :app do |server|
         get_files(:pictures, server)
       end
@@ -153,7 +153,7 @@ EOF
   # end
 
   desc "Upgrades production database to current Alchemy CMS version"
-  task :upgrade do
+  task upgrade: 'deploy:check' do
     on roles [:app, :db] do
       within release_path do
         with rails_env: fetch(:rails_env, 'production') do
