@@ -51,10 +51,10 @@ This imports your staging server's data onto your local development machine. Thi
 That even works the other way around:
 
 ```shell
-$ bundle exec cap alchemy:export:all
+$ bundle exec cap staging alchemy:export:all
 ```
 
-**NOTE:** This will **overwrite the database** on your server. But calm down my dear friend, Alchemy will ask you to perform a backup before overwriting it.
+**NOTE:** This will **overwrite the database** on your `staging` server. But calm down my dear friend, Alchemy will ask you to perform a backup before overwriting it.
 
 ## Contributing
 
