@@ -22,7 +22,7 @@ namespace :alchemy do
   # TODO: Do we really need this in Alchemy or should we release an official Capistrano plugin for that?
   namespace :database_yml do
     desc "Creates the database.yml file"
-    task :create do
+    task create: ['alchemy:default_paths', 'deploy:check'] do
       set :db_environment, ask("the environment", fetch(:rails_env, 'production'))
       set :db_adapter, ask("database adapter (mysql or postgresql)", 'mysql')
       set :db_adapter, fetch(:db_adapter).gsub(/\Amysql\z/, 'mysql2')
@@ -51,7 +51,7 @@ EOF
 
   namespace :db do
     desc "Seeds the database with essential data."
-    task :seed do
+    task seed: ['alchemy:default_paths', 'deploy:check'] do
       on roles :db do
         within release_path do
           with rails_env: fetch(:rails_env, 'production') do
@@ -62,7 +62,7 @@ EOF
     end
 
     desc "Dumps the database into 'db/dumps' on the server."
-    task :dump do
+    task dump: ['alchemy:default_paths', 'deploy:check'] do
       on roles :db do
         within release_path do
           timestamp = Time.now.strftime('%Y-%m-%d-%H-%M')
@@ -77,7 +77,7 @@ EOF
 
   namespace :import do
     desc "Imports all data (Pictures, attachments and the database) into your local development machine."
-    task :all do
+    task all: ['alchemy:default_paths', 'deploy:check'] do
       on roles [:app, :db] do
         invoke('alchemy:import:pictures')
         puts "\n"
@@ -88,7 +88,7 @@ EOF
     end
 
     desc "Imports the server database into your local development machine."
-    task :database do
+    task database: ['alchemy:default_paths', 'deploy:check'] do
       on roles :db do |server|
         puts "Importing database. Please wait..."
         system db_import_cmd(server)
@@ -97,63 +97,64 @@ EOF
     end
 
     desc "Imports attachments into your local machine using rsync."
-    task :attachments do
+    task attachments: ['alchemy:default_paths', 'deploy:check'] do
       on roles :app do |server|
         get_files(:attachments, server)
       end
     end
 
     desc "Imports pictures into your local machine using rsync."
-    task :pictures do
+    task pictures: ['alchemy:default_paths', 'deploy:check'] do
       on roles :app do |server|
         get_files(:pictures, server)
       end
     end
+  end
 
-    def get_files(type, server)
-      raise "No server given" if !server
-      FileUtils.mkdir_p "./uploads"
-      puts "Importing #{type}. Please wait..."
-      system "rsync --progress -rue 'ssh -p #{fetch(:port, 22)}' #{server.user}@#{server.hostname}:#{shared_path}/uploads/#{type} ./uploads/"
+  namespace :export do
+    desc "Sends all data (Pictures, attachments and the database) to your remote machine."
+    task all: ['alchemy:default_paths', 'deploy:check'] do
+      invoke 'alchemy:export:pictures'
+      invoke 'alchemy:export:attachments'
+      invoke 'alchemy:export:database'
     end
 
-    def db_import_cmd(server)
-      raise "No server given" if !server
-      dump_cmd = "cd #{release_path} && bundle exec rake RAILS_ENV=#{fetch(:rails_env, 'production')} alchemy:db:dump"
-      sql_stream = "ssh -p #{fetch(:port, 22)} #{server.user}@#{server.hostname} '#{dump_cmd}'"
-      "#{sql_stream} | #{database_import_command(database_config['adapter'])} 1>/dev/null 2>&1"
+    desc "Imports the server database into your local development machine."
+    task database: ['alchemy:default_paths', 'deploy:check'] do
+      on roles :db do |host|
+        within release_path do
+          if ask(:backup_confirm, 'WARNING: This task will overwrite your remote database. Do you want me to make a backup? (y/n)') == "y"
+            backup_database
+            export_database(host)
+          else
+            if ask(:overwrite_confirm, 'Are you sure? (y/n)') == "y"
+              export_database(host)
+            else
+              backup_database
+              export_database(host)
+            end
+          end
+        end
+      end
+    end
+
+    desc "Sends attachments to your remote machine using rsync."
+    task attachments: ['alchemy:default_paths', 'deploy:check'] do
+      on roles :app do |host|
+        send_files :attachments, host
+      end
+    end
+
+    desc "Sends pictures to your remote machine using rsync."
+    task pictures: ['alchemy:default_paths', 'deploy:check'] do
+      on roles :app do |host|
+        send_files :pictures, host
+      end
     end
   end
 
-  # TODO: Refactor me to use `linked_dirs`.
-  # Kept for reference on what needs to be done
-  #
-  # namespace :shared_folders do
-  #   desc "Creates the uploads and picture cache directory in the shared folder. Called after deploy:setup"
-  #   task :create do
-  #     on roles :app do
-  #       execute :mkdir, '-p', "#{shared_path}/uploads/pictures"
-  #       execute :mkdir, '-p', "#{shared_path}/uploads/attachments"
-  #       execute :mkdir, '-p', fetch(:shared_picture_cache_path)
-  #       execute :mkdir, '-p', "#{shared_path}/cache/assets"
-  #     end
-  #   end
-
-  #   desc "Sets the symlinks for uploads and picture cache folder. Called after deploy:symlink:linked_dirs"
-  #   task :symlink do
-  #     on roles :app do
-  #       execute :rm,    '-rf',  "#{release_path}/uploads"
-  #       execute :ln,    '-nfs', "#{shared_path}/uploads #{release_path}/"
-  #       execute :mkdir, '-p',   fetch(:public_path_with_mountpoint)
-  #       execute :ln,    '-nfs', "#{fetch(:shared_picture_cache_path)} #{File.join(fetch(:public_path_with_mountpoint), 'pictures')}"
-  #       execute :mkdir, '-p',   "#{release_path}/tmp/cache"
-  #       execute :ln,    '-nfs', "#{shared_path}/cache/assets #{release_path}/tmp/cache/assets"
-  #     end
-  #   end
-  # end
-
   desc "Upgrades production database to current Alchemy CMS version"
-  task :upgrade do
+  task upgrade: ['alchemy:default_paths', 'deploy:check'] do
     on roles [:app, :db] do
       within release_path do
         with rails_env: fetch(:rails_env, 'production') do
