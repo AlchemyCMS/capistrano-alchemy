@@ -114,9 +114,9 @@ EOF
   namespace :export do
     desc "Sends all data (Pictures, attachments and the database) to your remote machine."
     task all: ['alchemy:default_paths', 'deploy:check'] do
-      pictures
-      attachments
-      database
+      invoke 'alchemy:export:pictures'
+      invoke 'alchemy:export:attachments'
+      invoke 'alchemy:export:database'
     end
 
     desc "Imports the server database into your local development machine."
