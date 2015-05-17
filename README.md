@@ -10,7 +10,7 @@ In addition, it offers several tasks to synchronize your shared folders and your
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'capistrano-alchemy', github: 'mamhoff/capistrano-alchemy', branch: 'doc-and-export', group: :development, require: false
+gem 'capistrano-alchemy', github: 'AlchemyCMS/capistrano-alchemy', branch: 'master', group: :development, require: false
 ```
 
 And then execute:
@@ -21,7 +21,11 @@ Or install it yourself as:
 
     $ gem install capistrano-alchemy
 
-You also have to add the `Capistrano::Alchemy` tasks to your Capfile
+If your application is not prepared for capistrano yet, you need to do so now:
+
+    $ bundle exec cap install
+
+You have to add the `Capistrano::Alchemy` tasks to your `Capfile`
 
 ```ruby
 require 'capistrano/alchemy'
