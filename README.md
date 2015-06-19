@@ -25,9 +25,10 @@ If your application is not prepared for capistrano yet, you need to do so now:
 
     $ bundle exec cap install
 
-You have to add the `Capistrano::Alchemy` tasks to your `Capfile`
+You have to add the `Capistrano::Alchemy` and Rails specific tasks to your `Capfile`
 
 ```ruby
+require 'capistrano/rails' 
 require 'capistrano/alchemy'
 ```
 
