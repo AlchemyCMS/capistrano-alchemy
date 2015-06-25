@@ -11,7 +11,7 @@ namespace :alchemy do
       "uploads/pictures",
       "uploads/attachments",
       fetch(:alchemy_picture_cache_path),
-      "tmp/cache/assets"
+      "public/assets"
     ]
 
     # TODO: Check, if this is the right approach to ensure that we don't overwrite existing settings?
