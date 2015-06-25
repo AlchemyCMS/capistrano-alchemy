@@ -55,7 +55,7 @@ EOF
       on roles :db do
         within release_path do
           with rails_env: fetch(:rails_env, 'production') do
-            execute :rake, 'db:seed'
+            execute :rake, 'alchemy:db:seed'
           end
         end
       end
