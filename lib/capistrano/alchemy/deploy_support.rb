@@ -17,7 +17,7 @@ module Capistrano::Alchemy::DeploySupport
   def db_import_cmd(server)
     raise "No server given" if !server
     dump_cmd = "cd #{release_path} && bundle exec rake RAILS_ENV=#{fetch(:rails_env, 'production')} alchemy:db:dump"
-    sql_stream = "ssh -p #{fetch(:port, 22)} #{server.user}@#{server.hostname} '#{dump_cmd}'"
+    sql_stream = "#{ssh_command(server)} '#{dump_cmd}'"
     "#{sql_stream} | #{database_import_command(database_config['adapter'])} 1>/dev/null 2>&1"
   end
 
@@ -25,7 +25,7 @@ module Capistrano::Alchemy::DeploySupport
   def db_export_cmd(server)
     raise "No server given" if !server
     import_cmd = "cd #{release_path} && bundle exec rake RAILS_ENV=#{fetch(:rails_env, 'production')} alchemy:db:import"
-    ssh_cmd = "ssh -p #{fetch(:port, 22)} #{server.user}@#{server.hostname} '#{import_cmd}'"
+    ssh_cmd = "#{ssh_command(server)} '#{import_cmd}'"
     "#{database_dump_command(database_config['adapter'])} | #{ssh_cmd}"
   end
 
@@ -33,13 +33,23 @@ module Capistrano::Alchemy::DeploySupport
   def send_files(type, server)
     raise "No server given" if !server
     FileUtils.mkdir_p "./uploads/#{type}"
-    system "rsync --progress -rue 'ssh -p #{fetch(:port, 22)}' uploads/#{type} #{server.user}@#{server.hostname}:#{shared_path}/uploads/"
+    system "rsync --progress -rue 'ssh -p #{ssh_port(server)}' uploads/#{type} #{server.user}@#{server.hostname}:#{shared_path}/uploads/"
   end
 
   def get_files(type, server)
     raise "No server given" if !server
     FileUtils.mkdir_p "./uploads"
     puts "Importing #{type}. Please wait..."
-    system "rsync --progress -rue 'ssh -p #{fetch(:port, 22)}' #{server.user}@#{server.hostname}:#{shared_path}/uploads/#{type} ./uploads/"
+    system "rsync --progress -rue 'ssh -p #{ssh_port(server)}' #{server.user}@#{server.hostname}:#{shared_path}/uploads/#{type} ./uploads/"
+  end
+
+  private
+
+  def ssh_command(server)
+    "ssh -p #{ssh_port(server)} #{server.user}@#{server.hostname}"
+  end
+
+  def ssh_port(server)
+    server.port ? server.port : 22
   end
 end
