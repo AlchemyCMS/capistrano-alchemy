@@ -50,6 +50,6 @@ module Capistrano::Alchemy::DeploySupport
   end
 
   def ssh_port(server)
-    server.port ? server.port : 22
+    server.port || 22
   end
 end
