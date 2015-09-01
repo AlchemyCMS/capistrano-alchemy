@@ -1,4 +1,4 @@
-# Capistrano::Alchemy - Capistrano Tasks for Alchemy CMS
+# Capistrano Tasks for Alchemy CMS
 
 Capistrano::Alchemy adds four folders to Capistranos `shared_folders` array: `uploads/pictures`, `uploads/attachments`, `tmp/cache/assets`, and Alchemy's picture cache. It also runs Alchemy's Seeder after migrating the database.
 
@@ -28,7 +28,7 @@ If your application is not prepared for capistrano yet, you need to do so now:
 You have to add the `Capistrano::Alchemy` and Rails specific tasks to your `Capfile`
 
 ```ruby
-require 'capistrano/rails' 
+require 'capistrano/rails'
 require 'capistrano/alchemy'
 ```
 
