@@ -7,8 +7,7 @@ namespace :alchemy do
     set :linked_dirs, fetch(:linked_dirs, []) + [
       "uploads/pictures",
       "uploads/attachments",
-      fetch(:alchemy_picture_cache_path),
-      "tmp/cache/assets"
+      fetch(:alchemy_picture_cache_path)
     ]
   end
 
