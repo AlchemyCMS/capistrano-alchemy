@@ -50,17 +50,6 @@ EOF
   end
 
   namespace :db do
-    desc "Seeds the database with essential data."
-    task seed: ['alchemy:default_paths', 'deploy:check'] do
-      on roles :db do
-        within release_path do
-          with rails_env: fetch(:rails_env, 'production') do
-            execute :rake, 'db:seed'
-          end
-        end
-      end
-    end
-
     desc "Dumps the database into 'db/dumps' on the server."
     task dump: ['alchemy:default_paths', 'deploy:check'] do
       on roles :db do
