@@ -1,8 +1,8 @@
 # Capistrano Tasks for Alchemy CMS
 
-Capistrano::Alchemy adds four folders to Capistranos `shared_folders` array: `uploads/pictures`, `uploads/attachments`, `tmp/cache/assets`, and Alchemy's picture cache. It also runs Alchemy's Seeder after migrating the database.
+Capistrano::Alchemy adds four folders to Capistranos `linked_dirs` array: `uploads/pictures`, `uploads/attachments`, and Alchemy's picture cache folder.
 
-In addition, it offers several tasks to synchronize your shared folders and your database between environments.
+In addition, it offers several tasks to synchronize your uploads folder and your database between environments.
 
 
 ## Installation
