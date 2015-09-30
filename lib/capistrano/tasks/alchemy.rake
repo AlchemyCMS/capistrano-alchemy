@@ -1,52 +1,15 @@
 namespace :alchemy do
 
-  # TODO: split up this namespace into something that runs once on `cap install` and
-  # once on every deploy
-  desc "Prepare Alchemy for deployment."
+  # Prepare Alchemy for deployment
   task :default_paths do
     set :alchemy_picture_cache_path,
       -> { File.join('public', Alchemy::MountPoint.get, 'pictures') }
-
     set :linked_dirs, fetch(:linked_dirs, []) + [
       "uploads/pictures",
       "uploads/attachments",
       fetch(:alchemy_picture_cache_path),
       "tmp/cache/assets"
     ]
-
-    # TODO: Check, if this is the right approach to ensure that we don't overwrite existing settings?
-    # Or does Capistrano already handle this for us?
-    set :linked_files, fetch(:linked_files, []) + %w(config/database.yml)
-  end
-
-  # TODO: Do we really need this in Alchemy or should we release an official Capistrano plugin for that?
-  namespace :database_yml do
-    desc "Creates the database.yml file"
-    task create: ['alchemy:default_paths', 'deploy:check'] do
-      set :db_environment, ask("the environment", fetch(:rails_env, 'production'))
-      set :db_adapter, ask("database adapter (mysql or postgresql)", 'mysql')
-      set :db_adapter, fetch(:db_adapter).gsub(/\Amysql\z/, 'mysql2')
-      set :db_name, ask("database name", nil)
-      set :db_username, ask("database username", nil)
-      set :db_password, ask("database password", nil)
-      default_db_host = fetch(:db_adapter) == 'mysql2' ? 'localhost' : '127.0.0.1'
-      set :db_host, ask("database host", default_db_host)
-      db_config = ERB.new <<-EOF
-#{fetch(:db_environment)}:
-  adapter: #{fetch(:db_adapter)}
-  encoding: utf8
-  reconnect: false
-  pool: 5
-  database: #{fetch(:db_name)}
-  username: #{fetch(:db_username)}
-  password: #{fetch(:db_password)}
-  host: #{fetch(:db_host)}
-EOF
-      on roles :app do
-        execute :mkdir, '-p', "#{shared_path}/config"
-        upload! StringIO.new(db_config.result), "#{shared_path}/config/database.yml"
-      end
-    end
   end
 
   namespace :db do
@@ -153,5 +116,3 @@ EOF
     end
   end
 end
-
-
