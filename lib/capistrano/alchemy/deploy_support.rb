@@ -1,5 +1,3 @@
-require 'spinner'
-
 module Capistrano::Alchemy::DeploySupport
   # Makes a backup of the remote database and stores it in db/ folder
   def backup_database
@@ -16,7 +14,8 @@ module Capistrano::Alchemy::DeploySupport
 
   def db_import_cmd(server)
     raise "No server given" if !server
-    dump_cmd = "cd #{release_path} && bundle exec rake RAILS_ENV=#{fetch(:rails_env, 'production')} alchemy:db:dump"
+    env = "RAILS_ENV=#{fetch(:rails_env, 'production')}"
+    dump_cmd = "cd #{release_path} && #{rake_cmd} alchemy:db:dump #{env}"
     sql_stream = "#{ssh_command(server)} '#{dump_cmd}'"
     "#{sql_stream} | #{database_import_command(database_config['adapter'])} 1>/dev/null 2>&1"
   end
@@ -24,7 +23,8 @@ module Capistrano::Alchemy::DeploySupport
   # The actual export command that sends the data
   def db_export_cmd(server)
     raise "No server given" if !server
-    import_cmd = "cd #{release_path} && bundle exec rake RAILS_ENV=#{fetch(:rails_env, 'production')} alchemy:db:import"
+    env = "RAILS_ENV=#{fetch(:rails_env, 'production')}"
+    import_cmd = "cd #{release_path} && #{rake_cmd} alchemy:db:import #{env}"
     ssh_cmd = "#{ssh_command(server)} '#{import_cmd}'"
     "#{database_dump_command(database_config['adapter'])} | #{ssh_cmd}"
   end
@@ -51,5 +51,9 @@ module Capistrano::Alchemy::DeploySupport
 
   def ssh_port(server)
     server.port || 22
+  end
+
+  def rake_cmd
+    SSHKit.config.command_map[:rake]
   end
 end
