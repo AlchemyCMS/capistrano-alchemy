@@ -41,9 +41,10 @@ namespace :alchemy do
     desc "Imports the server database into your local development machine."
     task database: ['alchemy:default_paths', 'deploy:check'] do
       on roles :db do |server|
-        puts "Importing database. Please wait..."
+        puts '## Importing database'
+        puts '   Please wait! This may take some time...'
         system db_import_cmd(server)
-        puts "Done."
+        puts '   done.'
       end
     end
 
