@@ -46,7 +46,7 @@ module Capistrano::Alchemy::DeploySupport
   private
 
   def ssh_command(server)
-    "ssh -p #{ssh_port(server)} #{server.user}@#{server.hostname}"
+    "ssh -C -p #{ssh_port(server)} #{server.user}@#{server.hostname}"
   end
 
   def ssh_port(server)
