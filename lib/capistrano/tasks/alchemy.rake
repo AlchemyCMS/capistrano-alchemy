@@ -5,8 +5,7 @@ namespace :alchemy do
     set :alchemy_picture_cache_path,
       -> { File.join('public', Alchemy::MountPoint.get, 'pictures') }
     set :linked_dirs, fetch(:linked_dirs, []) + [
-      "uploads/pictures",
-      "uploads/attachments",
+      "uploads",
       fetch(:alchemy_picture_cache_path)
     ]
   end
