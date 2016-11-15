@@ -6,8 +6,8 @@ require 'capistrano/alchemy/version'
 Gem::Specification.new do |spec|
   spec.name          = "capistrano-alchemy"
   spec.version       = Capistrano::Alchemy::VERSION
-  spec.authors       = ["Martin Meyerhoff"]
-  spec.email         = ["mamhoff@googlemail.com"]
+  spec.authors       = ["Martin Meyerhoff", "Thomas von Deyen"]
+  spec.email         = ["mamhoff@googlemail.com", "thomas@vondeyen.com"]
   spec.summary       = %q{Capistrano Tasks for AlchemyCMS.}
   spec.homepage      = "https://alchemy-cms.com"
   spec.license       = "MIT"
