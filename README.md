@@ -1,6 +1,6 @@
 # Capistrano Tasks for Alchemy CMS
 
-Capistrano::Alchemy adds four folders to Capistranos `linked_dirs` array: `uploads/pictures`, `uploads/attachments`, and Alchemy's picture cache folder.
+Adds the Alchemy `uploads` folder to Capistranos `linked_dirs` array in order to survive deployments.
 
 In addition, it offers several tasks to synchronize your uploads folder and your database between environments.
 
@@ -10,7 +10,7 @@ In addition, it offers several tasks to synchronize your uploads folder and your
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'capistrano-alchemy', github: 'AlchemyCMS/capistrano-alchemy', branch: 'master', group: :development, require: false
+gem 'capistrano-alchemy', '~> 1.0', group: :development, require: false
 ```
 
 And then execute:
@@ -34,6 +34,19 @@ require 'capistrano/alchemy'
 
 ## Usage
 
+
+### Upgrade Alchemy
+
+We have a task to run the alchemy upgrader on your servers.
+
+```shell
+$ bundle exec cap staging alchemy:upgrade
+```
+
+**CAUTION:** Please be sure to run the upgrader locally before running this untested on your production system!
+
+Cloning the production data to your local dev env is advised before running the upgrader. This can easily be done with
+the next command.
 
 ### Synchronize your data
 
