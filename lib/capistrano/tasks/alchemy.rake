@@ -2,12 +2,7 @@ namespace :alchemy do
 
   # Prepare Alchemy for deployment
   task :default_paths do
-    set :alchemy_picture_cache_path,
-      -> { File.join('public', Alchemy::MountPoint.get, 'pictures') }
-    set :linked_dirs, fetch(:linked_dirs, []) + [
-      "uploads",
-      fetch(:alchemy_picture_cache_path)
-    ]
+    set :linked_dirs, fetch(:linked_dirs, []) + %w(uploads)
   end
 
   namespace :db do
