@@ -34,6 +34,8 @@ namespace :alchemy do
 
     desc "Imports the server database into your local development machine."
     task database: ['alchemy:default_paths', 'deploy:check'] do
+      include Capistrano::Alchemy::DeploySupport
+
       on roles :db do |server|
         puts '## Importing database'
         puts '   Please wait! This may take some time...'
@@ -44,6 +46,8 @@ namespace :alchemy do
 
     desc "Imports attachments into your local machine using rsync."
     task attachments: ['alchemy:default_paths', 'deploy:check'] do
+      include Capistrano::Alchemy::DeploySupport
+
       on roles :app do |server|
         get_files(:attachments, server)
       end
@@ -51,6 +55,8 @@ namespace :alchemy do
 
     desc "Imports pictures into your local machine using rsync."
     task pictures: ['alchemy:default_paths', 'deploy:check'] do
+      include Capistrano::Alchemy::DeploySupport
+
       on roles :app do |server|
         get_files(:pictures, server)
       end
@@ -67,6 +73,8 @@ namespace :alchemy do
 
     desc "Imports the server database into your local development machine."
     task database: ['alchemy:default_paths', 'deploy:check'] do
+      include Capistrano::Alchemy::DeploySupport
+
       on roles :db do |host|
         within release_path do
           if ask(:backup_confirm, 'WARNING: This task will overwrite your remote database. Do you want me to make a backup? (y/n)') == "y"
@@ -86,6 +94,8 @@ namespace :alchemy do
 
     desc "Sends attachments to your remote machine using rsync."
     task attachments: ['alchemy:default_paths', 'deploy:check'] do
+      include Capistrano::Alchemy::DeploySupport
+
       on roles :app do |host|
         send_files :attachments, host
       end
@@ -93,6 +103,8 @@ namespace :alchemy do
 
     desc "Sends pictures to your remote machine using rsync."
     task pictures: ['alchemy:default_paths', 'deploy:check'] do
+      include Capistrano::Alchemy::DeploySupport
+
       on roles :app do |host|
         send_files :pictures, host
       end
