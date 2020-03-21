@@ -18,6 +18,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "capistrano-rails", "~> 1.1"
-
-  spec.add_development_dependency 'rspec'
+  spec.add_dependency "capistrano-db-tasks", "~> 0.6"
 end
