@@ -38,7 +38,7 @@ namespace :alchemy do
     desc "Imports pictures into your local machine using rsync."
     task pictures: ['alchemy:default_paths', 'deploy:check'] do
       set :assets_dir, %w(public/pictures uploads/pictures)
-      set :local_assets_dir, %w(uploads)
+      set :local_assets_dir, %w(public uploads)
       on roles [:app, :db] do
         invoke('assets:local:sync')
       end
@@ -66,7 +66,7 @@ namespace :alchemy do
     desc "Sends pictures to your remote machine using rsync."
     task pictures: ['alchemy:default_paths', 'deploy:check'] do
       set :assets_dir, %w(public/pictures uploads/attachments)
-      set :local_assets_dir, %w(uploads)
+      set :local_assets_dir, %w(public uploads)
       invoke('assets:remote:sync')
     end
   end
