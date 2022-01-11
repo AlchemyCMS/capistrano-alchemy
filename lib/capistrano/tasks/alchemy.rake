@@ -56,7 +56,7 @@ namespace :alchemy do
     end
 
     desc "Exports the local database into your server."
-    task all: ['db:remote:sync', 'alchemy:default_paths', 'deploy:check']
+    task database: ['db:remote:sync', 'alchemy:default_paths', 'deploy:check']
 
     desc "Sends attachments to your remote machine using rsync."
     task attachments: ['alchemy:default_paths', 'deploy:check'] do
