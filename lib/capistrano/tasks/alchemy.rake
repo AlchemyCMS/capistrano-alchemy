@@ -2,7 +2,7 @@ namespace :alchemy do
 
   # Prepare Alchemy for deployment
   task :default_paths do
-    set :linked_dirs, fetch(:linked_dirs, []) + %w(uploads)
+    set :linked_dirs, fetch(:linked_dirs, []) + %w(uploads public/pictures)
   end
 
   namespace :db do
@@ -18,7 +18,7 @@ namespace :alchemy do
   namespace :import do
     desc "Imports all data (Pictures, attachments and the database) into your local development machine."
     task all: ['db:local:sync', 'alchemy:default_paths', 'deploy:check'] do
-      set :assets_dir, %w(uploads/pictures uploads/attachments)
+      set :assets_dir, %w(public/pictures uploads/pictures uploads/attachments)
       set :local_assets_dir, %w(uploads)
       on roles [:app, :db] do
         invoke('assets:local:sync')
@@ -39,7 +39,7 @@ namespace :alchemy do
 
     desc "Imports pictures into your local machine using rsync."
     task pictures: ['alchemy:default_paths', 'deploy:check'] do
-      set :assets_dir, %w(uploads/pictures)
+      set :assets_dir, %w(public/pictures uploads/pictures)
       set :local_assets_dir, %w(uploads)
       on roles [:app, :db] do
         invoke('assets:local:sync')
@@ -50,7 +50,7 @@ namespace :alchemy do
   namespace :export do
     desc "Sends all data (Pictures, attachments and the database) to your remote machine."
     task all: ['db:remote:sync', 'alchemy:default_paths', 'deploy:check'] do
-      set :assets_dir, %w(uploads/pictures uploads/attachments)
+      set :assets_dir, %w(public/pictures uploads/pictures uploads/attachments)
       set :local_assets_dir, %w(uploads)
       invoke('assets:remote:sync')
     end
@@ -67,7 +67,7 @@ namespace :alchemy do
 
     desc "Sends pictures to your remote machine using rsync."
     task pictures: ['alchemy:default_paths', 'deploy:check'] do
-      set :assets_dir, %w(uploads/attachments)
+      set :assets_dir, %w(public/pictures uploads/attachments)
       set :local_assets_dir, %w(uploads)
       invoke('assets:remote:sync')
     end
